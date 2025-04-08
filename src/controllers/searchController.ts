@@ -447,6 +447,9 @@ export const searchHotelsByFilters = async (req: Request, res: Response): Promis
       } catch (hotelError) {
         console.error('Hotel search error:', hotelError);
       }
+    }, {
+      timeout: 30000, // Increase timeout to 30 seconds
+      maxWait: 95000 // Maximum time to wait for transaction to start
     });
 
     // Create a single merged array with type information
