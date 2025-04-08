@@ -1,0 +1,380 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model bookings {
+  id                  BigInt    @default(autoincrement())
+  created_at          DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+  user_id             BigInt?
+  reel_id             BigInt?
+  booking_id          String?   @db.VarChar
+  hotel_id            String?   @db.VarChar
+  hotel_name          String?   @db.VarChar
+  selling_price       Float?
+  room_name           String?   @db.VarChar
+  RFN_NRFN            String?   @db.VarChar
+  holder_details      String?   @db.VarChar
+  guests_details      String?   @db.VarChar
+  status              String?   @db.VarChar
+  checkin             DateTime? @db.Timestamptz(6)
+  checkout            DateTime? @db.Timestamptz(6)
+  order_date          DateTime? @db.Timestamptz(6)
+  affiliate_id        BigInt?
+  cancelPolicyInfos   String?   @db.VarChar
+  commission          Float?
+  actualCancelPolicy  String?   @db.VarChar
+  refund_amount       Float?
+  razorpay_order_id   String?
+  razorpay_payment_id String?
+  traceId             String?
+  api_booking_id      String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model bookings_activities {
+  id             BigInt    @default(autoincrement())
+  created_at     DateTime  @default(now()) @db.Timestamptz(6)
+  activity_id    Int?
+  reel_id        BigInt?
+  user_id        BigInt?
+  booking_id     String?   @db.VarChar
+  selling_price  Float?    @db.Real
+  totalPayment   String?
+  commission     Float?    @db.Real
+  holder_details String?
+  status         String?   @db.VarChar
+  visit_date     DateTime? @db.Date
+  event_time     DateTime? @db.Time(6)
+  order_date     DateTime? @db.Timestamp(6)
+  affiliate_id   Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model categories {
+  id         BigInt    @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  name       String?
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  Status     Int?      @default(0) @db.SmallInt
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model cities {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  name       String?
+  code       String?  @unique
+  countryId  BigInt?
+  country    countries? @relation(fields: [countryId], references: [id])
+  hotels     hotels[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model countries {
+  id         BigInt   @id @default(autoincrement())
+  name       String?
+  code       String?  @unique
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  cities     cities[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model followers {
+  id           BigInt    @default(autoincrement())
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @default(now()) @db.Timestamp(6)
+  influncer_id BigInt?
+  viewer_id    BigInt?
+  action       String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model globaltix_activities {
+  id                            BigInt  @default(autoincrement())
+  Country                       String? @db.VarChar
+  City                          String? @db.VarChar
+  Attraction_Id                 Int?
+  Attraction_Name               String?
+  Product_Id                    Int?
+  Product_Group_Id              Int?
+  Product_Sku                   String? @db.VarChar
+  Category                      String? @db.VarChar
+  Product_Name                  String?
+  Product_Variant               String? @db.VarChar
+  Merchant_Name                 String? @db.VarChar
+  Merchant_Id                   Int?
+  Reseller_Id                   Int?
+  Rate                          Float?  @db.Real
+  Min_Selling_Price             Float?  @db.Real
+  Currency                      String? @db.VarChar
+  Required_Visitdate            String? @db.VarChar
+  Required_Capacity_or_Timeslot String? @db.VarChar
+  Required_QNA                  String? @db.VarChar
+  Ticket_Format                 String? @db.VarChar
+  Cancellation_Policy           String? @db.VarChar
+  No_of_Days_to_Cancel          Int?    @db.SmallInt
+  Validity                      String? @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model hotel_data {
+  id           BigInt   @default(autoincrement())
+  code         String?
+  name         String?
+  description  String?
+  attractions  Json?    @db.Json
+  images       String[]
+  address      String?
+  pinCode      String?
+  cityId       String?
+  phoneNumber  String?
+  faxNumber    String?
+  map          String?
+  rating       String?
+  checkInTime  String?
+  checkOutTime String?
+  city_id      BigInt?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model hotels {
+  id           BigInt   @id @default(autoincrement())
+  code         String?  @unique
+  name         String?
+  description  String?
+  attractions  Json?    @db.Json
+  images       Json?    @db.Json
+  address      String?
+  pinCode      String?
+  phoneNumber  String?
+  faxNumber    String?
+  map          String?
+  rating       Float?   @db.Real
+  checkInTime  String?
+  checkOutTime String?
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  facilities   Json?    @db.Json
+  cityCode     String?
+  cityName     String?
+  countryName  String?
+  countryCode  String?
+  city         cities?  @relation(fields: [cityCode], references: [code])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model hotels_duplicate {
+  id           BigInt   @default(autoincrement())
+  code         String?
+  name         String?
+  description  String?
+  attractions  Json?    @db.Json
+  images       Json?    @db.Json
+  address      String?
+  pinCode      String?
+  phoneNumber  String?
+  faxNumber    String?
+  map          String?
+  rating       Float?   @db.Real
+  checkInTime  String?
+  checkOutTime String?
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  facilities   Json?    @db.Json
+  cityCode     String?
+  cityName     String?
+  countryName  String?
+  countryCode  String?
+  images_jsonb Json?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model hotels_old {
+  id           BigInt    @default(autoincrement())
+  code         String?
+  name         String?
+  description  String?
+  attractions  Json?     @db.Json
+  images       Json?     @db.Json
+  address      String?
+  pinCode      String?
+  cityId       BigInt?
+  phoneNumber  String?
+  faxNumber    String?
+  map          String?
+  rating       Float?    @db.Real
+  checkInTime  DateTime? @db.Time(6)
+  checkOutTime DateTime? @db.Time(6)
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  facilities   Json?     @db.Json
+  cityCode     String?
+  cityName     String?
+  countryName  String?
+  countryCode  String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model likes_dislikes {
+  id         BigInt    @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  reel_id    BigInt?
+  user_id    BigInt?
+  reaction   String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model new_hotels {
+  id           BigInt    @default(autoincrement())
+  code         String?
+  name         String?
+  description  String?
+  attractions  Json?
+  images       Json?
+  address      String?
+  pinCode      String?
+  phoneNumber  String?
+  faxNumber    String?
+  map          String?
+  rating       String?
+  checkInTime  String?
+  checkOutTime String?
+  facilities   Json?
+  cityCode     String?
+  cityName     String?
+  countryName  String?
+  countryCode  String?
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@ignore
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model payments {
+  id                  String    @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  user_id             String    @db.Uuid
+  booking_id          String?
+  razorpay_order_id   String
+  razorpay_payment_id String?
+  amount              Decimal   @db.Decimal(10, 2)
+  currency            String    @default("INR")
+  status              String
+  payment_details     Json?
+  created_at          DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model reel_views {
+  id        BigInt   @default(autoincrement())
+  viewed_at DateTime @default(now()) @db.Timestamptz(6)
+  reel_id   BigInt?
+  viewer_id String?  @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model reels {
+  id              BigInt    @default(autoincrement())
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @default(now()) @db.Timestamp(6)
+  userId          BigInt?
+  title           String?
+  description     String?
+  video_url       String?
+  hotel_id        String?
+  approval_status Boolean?  @default(false)
+  category_id     BigInt?
+  isMonetize      Boolean?  @default(false)
+  view_count      BigInt?   @default(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model roles {
+  id         BigInt    @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  name       String?
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model saves {
+  id         BigInt    @default(autoincrement())
+  user_id    BigInt?
+  reel_id    BigInt?
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model shares {
+  id         BigInt   @default(autoincrement())
+  user_id    BigInt?
+  reel_id    BigInt?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  platform   String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model users {
+  id               BigInt    @default(autoincrement())
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime? @default(now()) @db.Timestamp(6)
+  name             String?
+  username         String?
+  dob              DateTime? @db.Date
+  gender           String?
+  about_me         String?
+  role_id          BigInt?
+  category_id      BigInt?
+  auth_user_id     String?   @db.Uuid
+  phone            String?   @db.VarChar
+  email            String?   @db.VarChar
+  profile_image    String?
+  youtube_url      String?
+  instagram_url    String?
+  tiktok_url       String?
+  ArchiveStatus    Boolean?  @default(false)
+  isCreatorRequest Boolean?  @default(false)
+
+  @@ignore
+}
