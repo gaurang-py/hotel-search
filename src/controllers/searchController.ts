@@ -11,6 +11,24 @@ const prisma = new PrismaClient({
   }
 });
 
+// Helper function to handle BigInt serialization
+const serializeBigInt = (data: any): any => {
+  if (typeof data === 'bigint') {
+    return data.toString();
+  }
+  if (Array.isArray(data)) {
+    return data.map(serializeBigInt);
+  }
+  if (data && typeof data === 'object') {
+    const result: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      result[key] = serializeBigInt(value);
+    }
+    return result;
+  }
+  return data;
+};
+
 // Define types for our search results
 interface CityResult {
   type: 'city';
@@ -462,13 +480,16 @@ export const searchHotelsByFilters = async (req: Request, res: Response): Promis
     // Finally add hotels (lowest priority)
     mergedResults.push(...categorizedResults.hotels);
 
-    return res.status(200).json({
+    // Serialize the response to handle BigInt values
+    const serializedResponse = {
       success: true,
       data: {
         resultType,
-        results: mergedResults
+        results: serializeBigInt(mergedResults)
       }
-    });
+    };
+
+    return res.status(200).json(serializedResponse);
   } catch (error) {
     console.error('Error searching hotels:', error);
     return res.status(500).json({
